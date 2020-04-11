@@ -1,0 +1,116 @@
+html{
+  font-size: 14px;
+}
+
+body {
+  background: black;
+  color: white;
+  text-align: center;
+  display: flex;
+  justify-content: stretch;
+  font-family: 'Futura W01','Helvetica Neue',Helvetica,Arial,sans-serif;
+  letter-spacing: .02em;
+}
+
+.section {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: auto;
+  width: 40vw;
+  margin-bottom: 30px;
+}
+
+h2 {
+  border-bottom: dotted thin;
+  display: inline-block;
+  margin: 0;
+  padding-top: 0px;
+  font-size: 0.875rem;
+  color: black;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+ul.date-list {
+  padding: 0;
+  margin: 0;
+}
+
+ul.date-list li {
+  list-style: none;
+  margin: 1.35rem;
+}
+
+#temp-now{
+  margin: 1.1rem;
+}
+
+#vibra-now{
+  margin: 1.1rem;
+}
+
+.chart-container {
+    height:50vh;
+    margin-top: 30px;
+}
+
+.hover-button {
+ display: inline-block;
+ transition-property: transform, background-color; 
+ transition-duration: 0.5s; 
+ transition-timing-function: ease-in-out;
+ cursor: pointer;
+ padding: .7rem;
+ font-size: 0.875rem;
+ border-radius: 100px;
+ border-width: 0;
+ color: black;
+ font-weight: 500;
+ box-shadow: 3px 3px 8px -4px rgba(0,0,0,0.75);
+ }
+
+.hover-button:hover {
+  transform: scale(1.1);
+  box-shadow: 4px 4px 14px -5px rgba(0,0,0,0.75);
+}
+
+.card-box{
+  background-color: white;
+  display: inline-block;
+  padding: 0.9rem;
+  border-radius: 20px;
+  box-shadow: 1px 1px 1px 0.5px rgb(185, 185, 185);
+}
+
+.pool .hover-button{
+  background-color: rgba(13, 228, 239, 0.54);
+}
+
+.sauna .hover-button{
+  background-color: rgba(239, 20, 20, 0.54);
+}
+
+@media (max-device-width: 436px) { 
+  html{
+    font-size: 36px;
+  }
+  
+  body {
+    flex-wrap: wrap;
+  }
+  .section {
+    min-width: 90vw;
+  }
+
+  .chart-container {
+    height:30vh;
+}
+
+/* h2{
+  font-size: 28px;
+}
+.hover-button{
+  font-size: 28px;
+}  */
+}
