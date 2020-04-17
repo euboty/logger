@@ -24,3 +24,5 @@ systemctl enable gunicorn
 cp ./logger.nginx.conf /etc/nginx/sites-enabled/
 rm /etc/nginx/sites-enabled/default
 service nginx reload
+
+python3 ../database.py create

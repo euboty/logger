@@ -3,33 +3,26 @@
 import sqlite3
 import os
 import glob
+from database import save_temperature, delete_old_temps
 
-# global variables
-db_name = '/home/pi/logger/templog.db'
-savetill = '-3 month'
+def read_temperature():
+    # search for a device file that starts with 28
+    devicelist = glob.glob('/sys/bus/w1/devices/28*')
 
-# use just once as global, used 2 times in script
-conn = sqlite3.connect(db_name)
+    if not devicelist:
+        raise Exception("could not find device")
+    else:
+        # append /w1slave to the device file
+        w1devicefile = devicelist[0] + '/w1_slave'
 
-# stores temperature and date in database
-
-
-def log_temperature(temp):
-
-    curs = conn.cursor()
-    curs.execute(
-        "INSERT INTO temps values(datetime('now', 'localtime'), (?))", (temp,))
-    conn.commit()
-
-
-
-def delete_old():
-    """deletes entrys older than savetill"""
-    curs = conn.cursor()
-    curs.execute(
-        "DELETE FROM temps WHERE timestamp <= date('now', (?))", (savetill,))
-    conn.commit()
-
+    # get temperature from the device file
+    try:
+        temperature = get_temp(w1devicefile)
+    except:
+        # Sometimes reads fail on the first attempt
+        # so we need to retry
+        temperature = get_temp(w1devicefile)
+    return temperature
 
 def get_temp(devicefile):
 
@@ -48,43 +41,12 @@ def get_temp(devicefile):
     else:
         raise Exception(f"incorrect status: {status}")
 
-
-def initialize():
-    """use if sensor connected for the first time"""
-    # enable kernel modules
-    os.system('sudo modprobe w1-gpio')
-    os.system('sudo modprobe w1-therm')
-
-def read_temperature():
-    # search for a device file that starts with 28
-    devicelist = glob.glob('/sys/bus/w1/devices/28*')
-    if not devicelist:
-        raise Exception("could not find device")
-    else:
-        # append /w1slave to the device file
-        w1devicefile = devicelist[0] + '/w1_slave'
-
-    # get temperature from the device file
-    try:
-        temperature = get_temp(w1devicefile)
-    except:
-        # Sometimes reads fail on the first attempt
-        # so we need to retry
-        temperature = get_temp(w1devicefile)
-    return temperature
-
 def main():
     temperature = read_temperature()
     print("temperature = "+str(temperature))
+    save_temperature(temperature)
+    # if storage becomes a problem uncomment this
+    # delete_old_temps()
 
-    # store temperature in database
-    log_temperature(temperature)
-
-    # WENN SPEICHERPLATZ EIN PROBLEM SEIN SOLLTE AKTIVIEREN:
-    # delete_old()
-    conn.close()
-
-
-# starting point
 if __name__ == "__main__":
     main()
