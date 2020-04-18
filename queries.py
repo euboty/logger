@@ -47,20 +47,29 @@ def get_sauna_dates(curs):
 
 
 def get_pool_dates(curs):
+    consecutive_measurements = 6
     curs.execute(f"""
         WITH pool_with_critical_hour_shift as (
             SELECT
-                date(
-                    datetime(timestamp, 'unixepoch', 'localtime', '-{critical_hour} hours')
-                ) as day_shifted
+                STRFTIME('%Y-%m-%d', timestamp, 'unixepoch', '-{critical_hour} hours')
+                as day_shifted
                 , vibration
+                , timestamp
             FROM vibrations
             WHERE timestamp >= strftime('%s', 'now', '-30 day')
-        )
-        SELECT day_shifted
-        FROM pool_with_critical_hour_shift
-        WHERE vibration is TRUE
-        GROUP BY day_shifted
+        ),
+        running_total AS (
+            SELECT 
+                sum(vibration) OVER (
+                    PARTITION BY day_shifted
+                    ORDER BY "timestamp" DESC 
+                    ROWS between {consecutive_measurements-1} PRECEDING AND 0 FOLLOWING 
+                ) as total
+                , day_shifted
+                ,"timestamp" 
+            FROM pool_with_critical_hour_shift 
+        )            
+        SELECT day_shifted FROM running_total WHERE total = {consecutive_measurements} GROUP BY day_shifted
     """)
     pool_date_rows = list(curs.fetchall())
     return [row["day_shifted"] for row in pool_date_rows]
