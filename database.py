@@ -55,16 +55,18 @@ def delete_old_vibrations():
 
 def display_temps():
     curs = conn.cursor()
+    print("Last 100 measurements:")
     for row in curs.execute("""
-        SELECT datetime(timestamp, 'localtime'), 
+        SELECT strftime('%Y-%m-%d %H:%M:%S', timestamp, 'unixepoch'), 
         temp FROM temps ORDER BY timestamp DESC LIMIT 100
         """):
         print(str(row[0])+"	"+str(row[1]))
 
 def display_vibrations():
     curs = conn.cursor()
+    print("Last 100 measurements:")
     for row in curs.execute("""
-            SELECT datetime(timestamp, 'localtime'), 
+            SELECT strftime('%Y-%m-%d %H:%M:%S', timestamp, 'unixepoch'), 
             vibration FROM vibrations ORDER BY timestamp DESC LIMIT 100
         """):
         print(str(row[0])+"	"+str(row[1]))
@@ -82,6 +84,6 @@ if __name__ == "__main__":
     elif args.command == "displaytemps":
         display_temps()
     elif args.command == "displayvibrations":
-        display_temps()
+        display_vibrations()
     else:
         print(f"Unknown command: {args.command}")
