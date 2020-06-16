@@ -10,6 +10,10 @@ apt-get install -y nginx sqlite3 python3-pip
 modprobe wire
 modprobe w1-gpio
 modprobe w1-therm
+echo "# temperature sensor config" >> /boot/config.txt
+echo "w1-gpio" >> /boot/config.txt
+echo "w1-therm" >> /boot/config.txt
+
 echo "" >> /boot/config.txt
 echo "# temperature sensor config" >> /boot/config.txt
 echo "dtoverlay=w1-gpio" >> /boot/config.txt
