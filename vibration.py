@@ -5,6 +5,7 @@ import time
 import board
 import busio
 import adafruit_adxl34x as adxl
+from loguru import logger
 
 from database import save_vibration
 
@@ -26,10 +27,15 @@ def read_vibration():
 
 def main():
     result = read_vibration()
-    print(f"Motion: {result}")
+    logger.info(f"Motion: {result}")
     save_vibration(result)
     # if storage becomes a problem uncomment this
     # delete_old_vibrations()
 
 if __name__ == "__main__":
-    main()
+    logger.add("/home/pi/logger/cron_log/vibration.log", rotation="2 MB", retention=5)
+
+    try:
+        main()
+    except Exception:
+        logger.exception("Top level error while reading vibrations")
