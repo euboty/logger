@@ -34,7 +34,7 @@ def save_vibration(is_vibrating):
 def save_temperature(temp):
     curs = conn.cursor()
     curs.execute("""
-        INSERT INTO temps 
+        INSERT INTO temps
         values(strftime('%s','now'), (?))
     """, (temp,))
     conn.commit()

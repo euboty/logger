@@ -1,21 +1,41 @@
 #!/usr/bin/python3
 
-from gpiozero import MotionSensor
-from database import save_vibration, delete_old_vibrations
+import time
 
-pir = MotionSensor(17, queue_len=1, sample_rate=100)
+import board
+import busio
+import adafruit_adxl34x as adxl
+from loguru import logger
+
+from database import save_vibration
+
+i2c = busio.I2C(board.SCL, board.SDA)
+gyro = adxl.ADXL345(i2c)
+
+
+
+
+def read_vibration():
+    gyro.enable_motion_detection(threshold=20)
+    # read the value once to clear any caches
+    gyro.events['motion']
+    time.sleep(1)
+    motion_detected = gyro.events['motion']
+    gyro.disable_motion_detection()
+    return motion_detected
 
 
 def main():
     result = read_vibration()
-    print(f"Motion: {result}")
+    logger.info(f"Motion: {result}")
     save_vibration(result)
     # if storage becomes a problem uncomment this
     # delete_old_vibrations()
 
-def read_vibration():
-    pir.wait_for_motion(timeout=5)
-    return pir.motion_detected
-
 if __name__ == "__main__":
-    main()
+    logger.add("/home/pi/logger/cron_log/vibration.log", rotation="2 MB", retention=5)
+
+    try:
+        main()
+    except Exception:
+        logger.exception("Top level error while reading vibrations")

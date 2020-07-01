@@ -1,3 +1,4 @@
 *.decoded
 __pycache__
 templog.db
+cron_log
