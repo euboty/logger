@@ -12,6 +12,7 @@ WorkingDirectory=/home/pi/logger/
 ExecStart=/usr/local/bin/gunicorn --bind=unix:/tmp/gunicorn.sock --workers=4 flask_app:app
 ExecReload=/bin/kill -s HUP $MAINPID
 ExecStop=/bin/kill -s TERM $MAINPID
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

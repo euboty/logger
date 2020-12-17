@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
-import sqlite3
-import os
 import glob
 
 from loguru import logger
 
-from database import save_temperature, delete_old_temps
+from database import save_temperature
+
 
 def read_temperature():
     # search for a device file that starts with 28
@@ -21,11 +20,12 @@ def read_temperature():
     # get temperature from the device file
     try:
         temperature = get_temp(w1devicefile)
-    except:
+    except Exception:
         # Sometimes reads fail on the first attempt
         # so we need to retry
         temperature = get_temp(w1devicefile)
     return temperature
+
 
 def get_temp(devicefile):
 
@@ -44,12 +44,14 @@ def get_temp(devicefile):
     else:
         raise Exception(f"incorrect status: {status}")
 
+
 def main():
     temperature = read_temperature()
-    logger.info(f"temperature = {temperature}")
+    logger.trace(f"temperature = {temperature}")
     save_temperature(temperature)
     # if storage becomes a problem uncomment this
     # delete_old_temps()
+
 
 if __name__ == "__main__":
     logger.add("/home/pi/logger/cron_log/temperature.log", rotation="2 MB", retention=5)

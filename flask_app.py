@@ -1,11 +1,13 @@
 import datetime
 import sqlite3
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort
+from loguru import logger
+
 
 from queries import (
     get_last_temp, get_sauna_dates, get_sauna_week_data, get_sauna_day_data,
-    get_last_vibration, get_pool_dates, get_pool_week_data, get_pool_day_data
+    get_last_vibration, get_pool_dates, get_pool_week_data, get_pool_day_data,
 )
 
 from monitor import read_temperature
@@ -105,13 +107,21 @@ def pool_day():
 @app.route("/api/sauna/now")
 def measure_temperature():
     # run the measure code and return temperature
-    return jsonify(read_temperature())
+    try:
+        return jsonify(read_temperature())
+    except Exception:
+        logger.exception("Could not read temperature")
+        return "Could not read temperature", 500
 
 
 @app.route("/api/pool/now")
 def measure_vibration():
     # run the measure code and return temperature
-    return jsonify(read_vibration())
+    try:
+        return jsonify(read_vibration())
+    except Exception:
+        logger.exception("Could not read vibration")
+        return "Could not read vibration", 500
 
 
 if __name__ == "__main__":
