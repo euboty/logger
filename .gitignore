@@ -1,4 +1,10 @@
+# python stuff
+.pyc
 *.decoded
 __pycache__
+
+# app stuff
 templog.db
+
+# logs
 cron_log
