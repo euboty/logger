@@ -47,7 +47,6 @@ def get_temp(devicefile):
 
 def main():
     temperature = read_temperature()
-    logger.trace(f"temperature = {temperature}")
     save_temperature(temperature)
     # if storage becomes a problem uncomment this
     # delete_old_temps()
